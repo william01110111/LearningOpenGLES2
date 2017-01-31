@@ -36,7 +36,6 @@ class ViewController: GLKViewController {
         Vertex( 0.0,  0.25, 0.0),    // TOP
         Vertex(-0.5, -0.25, 0.0),    // LEFT
         Vertex( 0.5, -0.25, 0.0),    // RIGHT
-
     ]
 
     override func viewDidLoad() {
@@ -71,7 +70,6 @@ class ViewController: GLKViewController {
         glDrawArrays(GLenum(GL_TRIANGLES), 0, 3)
         
         glDisableVertexAttribArray(VertexAttributes.vertexAttribPosition.rawValue)
-
     }
 
 }

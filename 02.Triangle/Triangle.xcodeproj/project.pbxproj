@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3DA0DC541E3FC28C00C2F0F3 /* ColorSpinnerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DA0DC531E3FC28C00C2F0F3 /* ColorSpinnerView.swift */; };
 		4EF5DF181C7F03F1001DD32E /* Vertex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF5DF171C7F03F1001DD32E /* Vertex.swift */; };
 		4EF5DF1A1C7F0460001DD32E /* BaseEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF5DF191C7F0460001DD32E /* BaseEffect.swift */; };
 		4EF5DF1D1C7F232F001DD32E /* SimpleVertexShader.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 4EF5DF1C1C7F232F001DD32E /* SimpleVertexShader.glsl */; };
@@ -19,6 +20,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3DA0DC531E3FC28C00C2F0F3 /* ColorSpinnerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorSpinnerView.swift; sourceTree = "<group>"; };
 		4EF5DF171C7F03F1001DD32E /* Vertex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vertex.swift; sourceTree = "<group>"; };
 		4EF5DF191C7F0460001DD32E /* BaseEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseEffect.swift; sourceTree = "<group>"; };
 		4EF5DF1C1C7F232F001DD32E /* SimpleVertexShader.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SimpleVertexShader.glsl; sourceTree = "<group>"; };
@@ -80,6 +82,7 @@
 				4EF9BCAD1C7EBEF4001FC3BF /* Info.plist */,
 				4EF5DF171C7F03F1001DD32E /* Vertex.swift */,
 				4EF5DF191C7F0460001DD32E /* BaseEffect.swift */,
+				3DA0DC531E3FC28C00C2F0F3 /* ColorSpinnerView.swift */,
 			);
 			path = Triangle;
 			sourceTree = "<group>";
@@ -160,6 +163,7 @@
 			files = (
 				4EF5DF1A1C7F0460001DD32E /* BaseEffect.swift in Sources */,
 				4EF9BCA41C7EBEF4001FC3BF /* ViewController.swift in Sources */,
+				3DA0DC541E3FC28C00C2F0F3 /* ColorSpinnerView.swift in Sources */,
 				4EF9BCA21C7EBEF4001FC3BF /* AppDelegate.swift in Sources */,
 				4EF5DF181C7F03F1001DD32E /* Vertex.swift in Sources */,
 			);
