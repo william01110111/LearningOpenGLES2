@@ -11,15 +11,24 @@ import GLKit
 
 class ColorSpinnerView: GLKView {
 	
+	let vertShaderSrc =
+		"attribute vec4 a_Position;         " +
+		"void main(void) {                  " +
+		"    gl_Position = a_Position;      " +
+		"}"
+	
+	let fragShaderSrc =
+		"void main(void) {                       " +
+		"    gl_FragColor = vec4(0, 1, 1, 1);    " +
+		"}"
+	
 	let vertices : [Vertex] = [
 		Vertex( 0.0,  0.25, 0.0),    // TOP
 		Vertex(-0.5, -0.25, 0.0),    // LEFT
 		Vertex( 0.5, -0.25, 0.0),    // RIGHT
 	]
 	
-	fileprivate var object = DrawableObject()
-	
-	fileprivate var shader = SpinnerShaderProgram()
+	fileprivate var object = Shape()
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
@@ -39,9 +48,7 @@ class ColorSpinnerView: GLKView {
 		self.context = EAGLContext(api: .openGLES2)
 		EAGLContext.setCurrent(self.context)
 		
-		shader.setup()
-		
-		object.setup(verts: vertices)
+		object = Shape(verts: vertices, shader: ShaderProgram(vert: vertShaderSrc, frag: fragShaderSrc))
 	}
 	
 	override func draw(_ rect: CGRect) {
@@ -50,9 +57,6 @@ class ColorSpinnerView: GLKView {
 		
 		glClearColor(0.0, 0.0, 1.0, 0.5);
 		glClear(GLbitfield(GL_COLOR_BUFFER_BIT))
-		
-		// shader.begin()
-		glUseProgram(shader.programHandle)
 		
 		object.draw()
 	}
@@ -63,11 +67,16 @@ class ColorSpinnerView: GLKView {
 	}
 }
 
-fileprivate class DrawableObject {
+fileprivate class Shape {
 	
 	var vertexBuffer : GLuint = 0
+	var shader = ShaderProgram()
 	
-	func setup(verts: [Vertex]) {
+	init() {}
+	
+	init(verts: [Vertex], shader: ShaderProgram) {
+		
+		self.shader = shader
 		
 		glGenBuffers(GLsizei(1), &vertexBuffer)
 		glBindBuffer(GLenum(GL_ARRAY_BUFFER), vertexBuffer)
@@ -77,6 +86,9 @@ fileprivate class DrawableObject {
 	}
 	
 	func draw() {
+		
+		shader.use()
+		
 		glEnableVertexAttribArray(VertexAttributes.vertexAttribPosition.rawValue)
 		
 		glVertexAttribPointer(
@@ -95,23 +107,37 @@ fileprivate class DrawableObject {
 	}
 }
 
-fileprivate class SpinnerShaderProgram {
+fileprivate class ShaderProgram {
 	
 	var programHandle : GLuint = 0
 	
-	static let vertShaderSrc =
-		"attribute vec4 a_Position;         " +
-		"void main(void) {                  " +
-		"    gl_Position = a_Position;      " +
-		"}"
+	init() {}
 	
-	static let fragShaderSrc =
-		"void main(void) {                       " +
-		"    gl_FragColor = vec4(0, 1, 1, 1);    " +
-		"}"
-	
-	func setup() {
-		compile()
+	init(vert: String, frag: String) {
+		let vertexShaderName = self.compileShader(src: vert, type: GLenum(GL_VERTEX_SHADER))
+		let fragmentShaderName = self.compileShader(src: frag, type: GLenum(GL_FRAGMENT_SHADER))
+		
+		self.programHandle = glCreateProgram()
+		glAttachShader(self.programHandle, vertexShaderName)
+		glAttachShader(self.programHandle, fragmentShaderName)
+		
+		glBindAttribLocation(self.programHandle, VertexAttributes.vertexAttribPosition.rawValue, "a_Position") // 정점 보내는 곳을 a_Position 어트리뷰트로 바인딩한다.
+		glLinkProgram(self.programHandle)
+		
+		var linkStatus : GLint = 0
+		glGetProgramiv(self.programHandle, GLenum(GL_LINK_STATUS), &linkStatus)
+		if linkStatus == GL_FALSE {
+			var infoLength : GLsizei = 0
+			let bufferLength : GLsizei = 1024
+			glGetProgramiv(self.programHandle, GLenum(GL_INFO_LOG_LENGTH), &infoLength)
+			
+			let info : [GLchar] = Array(repeating: GLchar(0), count: Int(bufferLength))
+			var actualLength : GLsizei = 0
+			
+			glGetProgramInfoLog(self.programHandle, bufferLength, &actualLength, UnsafeMutablePointer(mutating: info))
+			NSLog(String(validatingUTF8: info)!)
+			exit(1)
+		}
 	}
 	
 	func compileShader(src shaderSrc: String, type shaderType: GLenum) -> GLuint {
@@ -146,30 +172,7 @@ fileprivate class SpinnerShaderProgram {
 		return shaderHandle
 	}
 	
-	func compile() {
-		let vertexShaderName = self.compileShader(src: SpinnerShaderProgram.vertShaderSrc, type: GLenum(GL_VERTEX_SHADER))
-		let fragmentShaderName = self.compileShader(src: SpinnerShaderProgram.fragShaderSrc, type: GLenum(GL_FRAGMENT_SHADER))
-		
-		self.programHandle = glCreateProgram()
-		glAttachShader(self.programHandle, vertexShaderName)
-		glAttachShader(self.programHandle, fragmentShaderName)
-		
-		glBindAttribLocation(self.programHandle, VertexAttributes.vertexAttribPosition.rawValue, "a_Position") // 정점 보내는 곳을 a_Position 어트리뷰트로 바인딩한다.
-		glLinkProgram(self.programHandle)
-		
-		var linkStatus : GLint = 0
-		glGetProgramiv(self.programHandle, GLenum(GL_LINK_STATUS), &linkStatus)
-		if linkStatus == GL_FALSE {
-			var infoLength : GLsizei = 0
-			let bufferLength : GLsizei = 1024
-			glGetProgramiv(self.programHandle, GLenum(GL_INFO_LOG_LENGTH), &infoLength)
-			
-			let info : [GLchar] = Array(repeating: GLchar(0), count: Int(bufferLength))
-			var actualLength : GLsizei = 0
-			
-			glGetProgramInfoLog(self.programHandle, bufferLength, &actualLength, UnsafeMutablePointer(mutating: info))
-			NSLog(String(validatingUTF8: info)!)
-			exit(1)
-		}
+	func use() {
+		glUseProgram(programHandle)
 	}
 }
